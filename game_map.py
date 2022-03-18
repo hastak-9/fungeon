@@ -25,7 +25,7 @@ class GameMap:
         """
         Renders the map.
         If a tile is in the "visible" array, then draw it with the "light" color
-        If it isnt, but ist in the explored arrey. then draw it with the dark color.
+        If it isn't in fov, but is in the explored array. then draw it with the dark color.
         Otherwise, the default is "SHROUD"
         """
         console.tiles_rgb[0:self.width, 0:self.height] = np.select(
