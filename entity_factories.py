@@ -1,4 +1,5 @@
 from entity import Entity
+from game_map import GameMap
 
 player = Entity(
     char="@",

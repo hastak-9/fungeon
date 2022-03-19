@@ -35,7 +35,7 @@ def main() -> None:
         map_height,
         max_monsters_per_room,
         engine)
-
+    player.gamemap = engine.game_map #TODO: Attribute error entity has no gamemap umgangen, nach lsg schauen
     engine.update_fov()
 
     with tcod.context.new_terminal(
