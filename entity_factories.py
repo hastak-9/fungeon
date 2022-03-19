@@ -1,9 +1,9 @@
 from entity import Entity
 
 player = Entity(
-    char= "@",
-    color = (0, 255, 100),
-    name = "player",
+    char="@",
+    color=(0, 255, 100),
+    name="player",
     blocks_movement=True
 )
 
