@@ -3,10 +3,30 @@ from typing import Optional, TYPE_CHECKING
 
 import tcod.event
 
-from actions import Action, EscapeAction, BumpAction
+from actions import Action, EscapeAction, BumpAction, WaitAction
 
 if TYPE_CHECKING:
     from engine import Engine
+
+
+MOVE_KEYS = {
+    tcod.event.K_UP: (0, -1),
+    tcod.event.K_w: (0, -1),
+    tcod.event.K_DOWN: (0, 1),
+    tcod.event.K_x: (0, 1),
+    tcod.event.K_LEFT: (-1, 0),
+    tcod.event.K_a: (-1, 0),
+    tcod.event.K_RIGHT: (1, 0),
+    tcod.event.K_d: (1, 0),
+    tcod.event.K_q: (-1, -1),
+    tcod.event.K_e: (1, -1),
+    tcod.event.K_c: (1, 1),
+    tcod.event.K_y: (-1, 1),
+}
+
+WAIT_KEYS = {
+    tcod.event.K_s,
+}
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
@@ -35,15 +55,11 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         player = self.engine.player
 
-        if key == tcod.event.K_UP or key == tcod.event.K_w:
-            action = BumpAction(player, dx=0, dy=-1)
-        elif key == tcod.event.K_DOWN or key == tcod.event.K_s:
-            action = BumpAction(player, dx=0, dy=1)
-        elif key == tcod.event.K_LEFT or key == tcod.event.K_a:
-            action = BumpAction(player, -1, 0)
-        elif key == tcod.event.K_RIGHT or key == tcod.event.K_d:
-            action = BumpAction(player, 1, 0)
-
+        if key in MOVE_KEYS:
+            dx, dy = MOVE_KEYS[key]
+            action = BumpAction(player, dx, dy)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction(player)
 

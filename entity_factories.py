@@ -1,23 +1,27 @@
-from entity import Entity
-from game_map import GameMap
+from entity import Actor
+from components.ai import HostileEnemy
+from components.fighter import Fighter
 
-player = Entity(
+player = Actor(
     char="@",
     color=(0, 255, 100),
     name="player",
-    blocks_movement=True
+    ai_cls=HostileEnemy,
+    fighter=Fighter(hp=30, defense=2, power=5),
 )
 
-orc = Entity(
+orc = Actor(
     char="o",
     color=(63, 127, 63),
     name="Orc",
-    blocks_movement=True
+    ai_cls=HostileEnemy,
+    fighter=Fighter(hp=10, defense=0, power=3),
 )
 
-troll = Entity(
+troll = Actor(
     char="T",
     color=(0, 127, 0),
     name="Troll",
-    blocks_movement=True
+    ai_cls=HostileEnemy,
+    fighter=Fighter(hp=16, defense=1, power=4),
 )

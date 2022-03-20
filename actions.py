@@ -71,7 +71,7 @@ class MeleeAction(ActionWithDirection):
         target = self.blocking_entity # see ActionWithDirection for blocking_entity
         if not target:
             return # No entity to attack
-        print(f"You kick the {target.name}, much to its annoyance")
+        print(f"{self.entity.name} kicks the {target.name}, much to its annoyance")
 
 
 class BumpAction(ActionWithDirection):
@@ -80,4 +80,9 @@ class BumpAction(ActionWithDirection):
             return MeleeAction(self.entity, self.dx, self.dy).perform()
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()
+
+
+class WaitAction(Action):
+    def perform(self) -> None:
+        pass
 
