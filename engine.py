@@ -22,7 +22,7 @@ class Engine:
     def __init__(self, player: Actor):
         self.event_handler: EventHandler = input_handlers.MainGameEventHandler(self)
         self.player = player
-        self.mouse_location = (0,0)
+        self.mouse_location = (0, 0)
         self.message_log = MessageLog()
 
     def handle_enemy_turns(self) -> None:
