@@ -66,7 +66,7 @@ def main() -> None:
                 traceback.print_exc() # Print error to stderr
                 # Then print the error to the message log.
                 engine.message_log.add_message(traceback.format_exc(), color.error)
-            engine.event_handler.handle_events(context)
+            engine.event_handler.handle_events(event)
 
 
 if __name__ == '__main__':

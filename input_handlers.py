@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
-import tcod.event
+import tcod
 import color
 import exceptions
 from actions import Action, EscapeAction, BumpAction, WaitAction
@@ -47,7 +47,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         try:
             action.perform()
         except exceptions.Impossible as exc:
-            self.engine.message_log.add_message((exc.args[0], color.impossible))
+            self.engine.message_log.add_message(exc.args[0], color.impossible)
             return False # Skip enemy turn on exceptions.
 
         self.engine.handle_enemy_turns()

@@ -22,7 +22,7 @@ class Message:
 
 class MessageLog:
     def __init__(self) -> None:
-        self.messages: List[Message] = []
+        self.messages: list[Message] = []
 
     def add_message(self,
                     text: str, fg: Tuple[int, int, int] = color.white, *, stack: bool = True
@@ -36,7 +36,7 @@ class MessageLog:
             self.messages.append(Message(text, fg))
 
     def render(
-            self, console: tcod.Console, x:int, y: int, width: int, height: int,
+            self, console: tcod.Console, x: int, y: int, width: int, height: int,
     ) -> None:
         """
         Render this log over the given area. 'x', 'y', 'width', 'height' is the rectangular region to render onto the console
