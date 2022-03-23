@@ -54,11 +54,6 @@ class ActionWithDirection(Action):
         raise NotImplementedError()
 
 
-class EscapeAction(Action):
-    def perform(self) -> None:
-        raise SystemExit()
-
-
 class MovementAction(ActionWithDirection):
     def perform(self) -> None:
         dest_x, dest_y = self.dest_xy
@@ -111,7 +106,7 @@ class WaitAction(Action):
 
 class ItemAction(Action):
     def __init__(self,
-                 entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]]):
+                 entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]] = None):
         super().__init__(entity)
         self.item = item
         if not target_xy:

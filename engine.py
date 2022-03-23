@@ -33,7 +33,7 @@ class Engine:
                     entity.ai.perform()
                 except exceptions.Impossible:
                     pass # Ignore impossible exceptions from AI
-                entity.ai.perform()
+                #entity.ai.perform()
 
     def render(self, console: Console) -> None:
         self.game_map.render(console)
