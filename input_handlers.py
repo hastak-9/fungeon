@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, Tuple, Callable, TYPE_CHECKING
 
 import tcod
 import color
@@ -55,7 +55,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             action.perform()
         except exceptions.Impossible as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
-            return False # Skip enemy turn on exceptions.
+            return False  # Skip enemy turn on exceptions.
 
         self.engine.handle_enemy_turns()
 
@@ -95,7 +95,9 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_i:
             self.engine.event_handler = InventoryActivateHandler(self.engine)
         elif key == tcod.event.K_0:
-            self.engine.event_handler = InventoryDropHandler
+            self.engine.event_handler = InventoryDropHandler(self.engine)
+        elif key == tcod.event.K_7:
+            self.engine.event_handler = LookHandler(self.engine)
 
         # no valid key was pressed
         return action
@@ -124,7 +126,7 @@ class HistoryViewer(EventHandler):
         self.cursor = self.log_length - 1
 
     def on_render(self, console: tcod.Console) -> None:
-        super().on_render(console) # Draw the main state as the background.
+        super().on_render(console)  # Draw the main state as the background.
 
         log_console = tcod.Console(console.width - 6, console.height - 6)
 
@@ -149,7 +151,7 @@ class HistoryViewer(EventHandler):
         # Fancy conditional movement to tmake it feel right.
         if event.sym in CURSOR_Y_KEYS:
             adjust = CURSOR_Y_KEYS[event.sym]
-            if adjust <0 and self.cursor == 0:
+            if adjust < 0 and self.cursor == 0:
                 # Only move from the top to the bottom when you're on the edge
                 self.cursor = self.log_length - 1
             elif adjust > 0 and self.cursor == self.log_length - 1:
@@ -159,9 +161,9 @@ class HistoryViewer(EventHandler):
                 # Otherwise move whilestaying clamped to the bounds of the history log
                 self.cursor = max(0, min(self.cursor + adjust, self.log_length - 1))
         elif event.sym == tcod.event.K_HOME:
-            self.cursor = 0 # move directly to the top message
+            self.cursor = 0  # move directly to the top message
         elif event.sym == tcod.event.K_END:
-            self.cursor = self.log_length - 1 # Move directly to the last message
+            self.cursor = self.log_length - 1  # Move directly to the last message
         else:
             self.engine.event_handler = MainGameEventHandler(self.engine)
 
@@ -240,7 +242,7 @@ class InventoryEventHandler(AskUserEventHandler):
         if number_of_items_in_inventory > 0:
             for i, item in enumerate(self.engine.player.inventory.items):
                 item_key = chr(ord("a") + i)
-                #item_key = str(i)
+                #  item_key = str(i)
                 console.print(x + 1, y + i + 1, f"({item_key}) {item.name}")
         else:
             console.print(x + 1, y + 1, "(Empty)")
@@ -319,7 +321,8 @@ class SelectIndexHandler(AskUserEventHandler):
             # Clamp the cursor index to the map size.
             x = max(0, min(x, self.engine.game_map.width - 1))
             y = max(0, min(y, self.engine.game_map.height - 1))
-            self.engine.mouse_location = x, y
+            if self.engine.game_map.tiles["walkable"][x, y]: #  TODO: eventuell wieder entfernen
+                self.engine.mouse_location = x, y
             return None
         elif key in CONFIRM_KEYS:
             return self.on_index_selected(*self.engine.mouse_location)
@@ -341,3 +344,43 @@ class LookHandler(SelectIndexHandler):
     def on_index_selected(self, x: int, y: int) -> None:
         """Return to main handler."""
         self.engine.event_handler = MainGameEventHandler(self.engine)
+
+
+class SingleRangedAttackHandler(SelectIndexHandler):
+    """Handles targeting a single enemy. Only the enemy selected will be affected."""
+
+    def __init__(self, engine: Engine, callback: Callable[[Tuple[int, int]], Optional[Action]]):
+        super().__init__(engine)
+        self.callback = callback
+
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return self.callback((x, y))
+
+
+class AreaRangedAttackHandler(SelectIndexHandler):
+    """Handles targeting an area within a given radius. Any entity within the area will be affected."""
+
+    def __init__(self, engine: Engine, radius: int, callback: Callable[[Tuple[int, int]], Optional[Action]],):
+        super().__init__(engine)
+
+        self.radius = radius
+        self.callback = callback
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Highlight the tile under the cursor."""
+        super().on_render(console)
+
+        x, y = self.engine.mouse_location
+
+        #  Draw a rectangle around the targeted area, so the player can see the affected tiles.
+        console.draw_frame(
+            x=x - self.radius - 1,
+            y=y - self.radius - 1,
+            width=self.radius ** 2,
+            height=self.radius ** 2,
+            fg=color.red,
+            clear=False
+        )
+
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return self.callback((x, y))

@@ -28,6 +28,10 @@ def main() -> None:
     )
 
     player = copy.deepcopy(entity_factories.player)
+    #player.inventory.items.append(entity_factories.fireball_scroll)     #  TODO: Starting inventory
+    #player.inventory.items.append(entity_factories.confusion_scroll)
+    #player.inventory.items.append(entity_factories.health_potion)
+
 
     engine = Engine(player)
 

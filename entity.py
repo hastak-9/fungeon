@@ -72,12 +72,12 @@ class Entity:
         """
         Return the distance between the current entity and the given (x,y)
         """
-        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+        return math.sqrt(((x - self.x) ** 2) + ((y - self.y) ** 2))
 
     def move(self, dx: int, dy:int) -> None:
-        #Move the entity by a given amount
-        self.x = self.x + dx
-        self.y = self.y + dy
+        #  Move the entity by a given amount
+        self.x += dx
+        self.y += dy
 
 
 class Actor(Entity):
